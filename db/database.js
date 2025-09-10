@@ -1,13 +1,11 @@
-const mysql = require('mysql2/primise');
-require('dotenv').config(); // caso a gente queira usar variaveis de ambiente
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-// configuração do Banco de Dados
 const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    host: process.env.DB_USER || 'root',
-    host: process.env.DB_PASSWORD || 'localhost',
-    host: process.env.DB_NAME || 'prj_api_users'
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'prj_api_users'
 });
 
-// importação direto do arquivo BD.
 module.exports = db;

@@ -13,7 +13,7 @@ const SALT_ROUNDS = 10; // Número de rounds para o bcrypt
 // Rota para registrar um novo usuário/
 app.post("/api/users", async (req, res) => {
     try{
-        const [ nome, email, senha ] = req.body;
+        const { nome, email, senha } = req.body;
         
         //Validação dos campos obrigatórios
         if (!nome || !email || !senha) {
@@ -22,11 +22,11 @@ app.post("/api/users", async (req, res) => {
             });
         }
 
-        const emaiLowerCase = email.toLoweCase();
+        const emaiLowerCase = email.toLowerCase();
 
         // Verificar se o email já está em uso
         const [rows] = await db.query("SELECT id FROM usuarios WHERE email = ?",
-        [emailLowerCase]);
+        [emaiLowerCase]);
 
         if (rows.length > 0) {
             return res.status(409).
@@ -38,8 +38,8 @@ app.post("/api/users", async (req, res) => {
 
         // Inserir um novo usuário 
         const [result] = await db.query(
-            "INSERT INTO usuarios (nome, email, passwordHash) VALUES (?,?,?)",
-            [nome, emailLowerCase, passwordHash]
+            "INSERT INTO usuarios (nome, email, passwordHash, createAT) VALUES (?,?,?, NOW())",
+            [nome, emaiLowerCase, passwordHash]
         );
 
         const id = result.insertId;
@@ -47,7 +47,7 @@ app.post("/api/users", async (req, res) => {
         res.status(201).json({
             id,
             nome,
-            email: emailLowerCase
+            email: emaiLowerCase
         });
 
     } catch (error) {
